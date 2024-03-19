@@ -21,3 +21,4 @@ less EMBL_ecotagged_Climb2_ASVs_annot_w_blood_haps.fasta | grep -c "Wisely_C_lim
 less EMBL_ecotagged_Climb2_ASVs_annot_w_blood_haps.fasta | grep -c "Wisely_C_limb_2_hap_1"
 435
 #all of the TRUE IDs were annotated with a Wisely blood hap when using them as the knowndb and all haps from NCBI as the db
+#editme
