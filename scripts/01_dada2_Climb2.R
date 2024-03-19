@@ -18,7 +18,7 @@ library(dada2); packageVersion("dada2")
 help(package="dada2")
 ## the tutorial is based on version '1.16.0' but this is version 1.26.0
 #setwd("/Users/Eldridge/Desktop/Marine Population Genetics with eDNA/Dada2_Climb2_analysis")
-path <- "/Users/Eldridge/Desktop/Marine Population Genetics with eDNA/2024_Analysis_Shark_D-loop_eDNA/data/22-23_Climb2_unamplified/01_cleaned_trimmed/cutadapt/trimmomatic"
+path <- "/Users/Eldridge/Desktop/Marine Population Genetics with eDNA/2024_Analysis_Shark_D-loop_eDNA/data/22-23_Climb2_amplified/01_cleaned_trimmed/cutadapt/trimmomatic"
 list.files(path)
 
 library(plyr)
@@ -33,7 +33,7 @@ list.files(path)
 patternR1<-"_final_R1"
 patternR2<-"_final_R2"
 
-dadapath<-"/Users/Eldridge/Desktop/Marine Population Genetics with eDNA/2024_Analysis_Shark_D-loop_eDNA/data/22-23_Climb2_unamplified/02_Dada2_ASVs"
+dadapath<-"/Users/Eldridge/Desktop/Marine Population Genetics with eDNA/2024_Analysis_Shark_D-loop_eDNA/data/22-23_Climb2_amplified/02_Dada2_ASVs"
 
 #basicdada <- function(path, dadapath, lengthMin, lengthMax, patternR1, patternR2, locus){
 # Chemin vers les R1-R2 sans primers
@@ -164,8 +164,8 @@ table(nchar(getSequences(seqtab)))
 
 plot(length_distribution)
 #target length without primers =395bp for C.limb2 according to Sanger data analysis. But 435 according to primer design in Geneious (re-check this). So set the min and max -15bp, +5bp?
-#in the plot, most sequences (almost all, were under 60bp)
-lengthMin<-"50"
+#in the plot, most sequences (almost all, were under 300bp)
+lengthMin<-"300"
 lengthMax<-"450"
 saveRDS(length_distribution, paste0(dadapath, "/7_length_distribution", "Climb2_22-23", ".rds"))
 print(paste0(dadapath, "/7_length_distribution", "Climb2_22-23", ".rds"))
@@ -216,7 +216,7 @@ saveRDS(read.track, paste0(dadapath, "/8_readtrack", "Climb2_22-23", ".rds"))
 ##########################
 #save final asv tables
 print("- Saving final ASV table :")
-asvname <-("Climb2_22-23")
+asvname <-("Climb_22-23")
 saveRDS(seqtab2.nochim, paste0(dadapath, "/9_", asvname,"_asv.rds")) 
 print(paste0(dadapath, "/9_", asvname,"_asv.rds"))
 
@@ -224,18 +224,18 @@ print(paste0(dadapath, "/9_", asvname,"_asv.rds"))
 
 #Path for inputs (dada_dir or output_merge) and outputs
 #ASV Table 
-finaltab = readRDS(paste0(dadapath,"/9_Climb2_22-23_asv.rds"))
+finaltab = readRDS(paste0(dadapath,"/9_Climb_22-23_asv.rds"))
 
 # Create output data
 asv_seqs <- colnames(finaltab)
 asv_headers <- vector(dim(finaltab)[2], mode="character")
 for (i in 1:dim(finaltab)[2]) {
-  asv_headers[i] <- paste(">Climb2un_ASV", i, sep="_")
+  asv_headers[i] <- paste(">Climb-22-23_ASV", i, sep="_")
 }
 # ASV fasta files
 print("Write ASV fasta file")
 asv_fasta <- c(rbind(asv_headers, asv_seqs))
-write(asv_fasta, paste0(dadapath, "/10_ASVs_Climb2.fasta"))
+write(asv_fasta, paste0(dadapath, "/10_ASVs_Climb-22-23.fasta"))
 # Count table
 print("Write count table to file")
 asv_tab <- as.data.frame(t(finaltab))
@@ -245,7 +245,7 @@ asv_tav <- asv_tab[,c(3,1,2)]
 ClusterID <- sub(">", "", asv_headers)
 asv_tab <- cbind(ClusterID, asv_tab)
 asv_tab <-cbind(asv_tab, asv_seqs)
-write.table(asv_tab, paste0(dadapath, "/10_ASVs_counts_Climb2.tsv"), sep="\t", quote=F, col.names=T, row.names=F)
+write.table(asv_tab, paste0(dadapath, "/10_ASVs_counts_Climb-22-23.tsv"), sep="\t", quote=F, col.names=T, row.names=F)
 
 save.image(paste0(dadapath,"/After_Dada2_Climb2.RData"))
 
