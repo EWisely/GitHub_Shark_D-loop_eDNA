@@ -248,8 +248,16 @@ asv_tab <-cbind(asv_tab, asv_seqs)
 write.table(asv_tab, paste0(dadapath, "/10_ASVs_counts_Climb-22-23.tsv"), sep="\t", quote=F, col.names=T, row.names=F)
 
 save.image(paste0(dadapath,"/After_Dada2_Climb2.RData"))
+#load("data/22-23_Climb2_amplified/02_Dada2_ASVs/After_Dada2_Climb2.RData")
 
+####HANDOFF TO OBI3 for ecotag step######
+###Then usearch for annotation with blood and all NCBI D-loop haps####
 
 ############ HANDOFF TO Metabar ################
-metabar_reads_table<-as.data.frame(t(asv_tab))
+metabar_reads_table <- as.data.frame(t(asv_tab))
+metabar_reads_table <-
+  rownames_to_column(metabar_reads_table, var = "id")
+write_csv(metabar_reads_table,
+            "data/22-23_Climb2_amplified/04_Usearch_annotated/22-23Climb_dada2_metabar_reads_table.csv")
+
 
