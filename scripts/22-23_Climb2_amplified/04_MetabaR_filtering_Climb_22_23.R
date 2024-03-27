@@ -132,12 +132,12 @@ ggdraw() +
 
 # Flag not degraded (TRUE) vs. potentially degraded sequences (FALSE)
 Climb_22_23$motus$not_degraded <-
-  ifelse(Climb_22_23$motus$BEST_IDENTITY < 0.98, F, T)
+  ifelse(Climb_22_23$motus$BEST_IDENTITY < 0.90, F, T)
 
 # Proportion of each of these over total number of MOTUs
 table(Climb_22_23$motus$not_degraded) / nrow(Climb_22_23$motus)
 
-# Flag not well-matched haplotypes (TRUE) vs. well-matched haplotypes (FALSE)
+# Flag poorly-matched haplotypes (TRUE) vs. well-matched haplotypes (FALSE)
 Climb_22_23$motus$hap_match <-
   ifelse(Climb_22_23$motus$annot_pctid<95, F, T)
 
@@ -186,12 +186,9 @@ Climb_22_23_no_contas <- subset_metabarlist(Climb_22_23_no_contas, table = "pcrs
 summary_metabarlist(Climb_22_23)
 summary_metabarlist(Climb_22_23_no_contas)
 
-Climb_22_23_hap_matched<-subset_metabarlist(Climb_22_23_no_contas, table ="motus", 
-                                            indices = Climb_22_23_no_contas$motus$annot_qual!="other")
-
-ggplot(Climb_22_23_hap_matched$pcrs, aes(nb_reads)) +
+ggplot(Climb_22_23$pcrs, aes(nb_reads)) +
   geom_histogram(bins=40, color="grey", fill="white") +
-  geom_vline(xintercept = 1e02, lty=2, color="orange") + # threshold
+  geom_vline(xintercept = 5e02, lty=2, color="orange") + # threshold
   scale_x_log10() +
   labs(x="# Reads (with all MOTUs and PCRs)",
        y="# PCRs") +
@@ -199,17 +196,14 @@ ggplot(Climb_22_23_hap_matched$pcrs, aes(nb_reads)) +
   theme(panel.grid = element_blank())
 
 # Flag pcrs with an acceptable sequencing depth (TRUE) or inacceptable one (FALSE)
-Climb_22_23_hap_matched$pcrs$seqdepth_ok <- ifelse(Climb_22_23_no_contas$pcrs$nb_reads < 1e02, F, T)
-
-# Flag pcrs with an acceptable sequencing depth (TRUE) or inacceptable one (FALSE)
-Climb_22_23_no_contas$pcrs$seqdepth_ok <- ifelse(Climb_22_23_no_contas$pcrs$nb_reads < 1e02, F, T)
+Climb_22_23_no_contas$pcrs$seqdepth_ok <- ifelse(Climb_22_23_no_contas$pcrs$nb_reads < 5e02, F, T)
 
 # Flag pcrs with an acceptable sequencing depth (TRUE) or inacceptable one (FALSE) in full metabarlist too
-Climb_22_23$pcrs$seqdepth_ok <- ifelse(Climb_22_23$pcrs$nb_reads < 1e02, F, T)
+Climb_22_23$pcrs$seqdepth_ok <- ifelse(Climb_22_23$pcrs$nb_reads < 5e02, F, T)
 
 # Proportion of each of these over total number of pcrs, control excluded
-table(Climb_22_23_hap_matched$pcrs$seqdepth_ok[Climb_22_23_hap_matched$pcrs$type=="sample"]) /
-  nrow(Climb_22_23_hap_matched$pcrs[Climb_22_23_hap_matched$pcrs$type=="sample",])
+table(Climb_22_23_no_contas$pcrs$seqdepth_ok[Climb_22_23_no_contas$pcrs$type=="sample"]) /
+  nrow(Climb_22_23_no_contas$pcrs[Climb_22_23_no_contas$pcrs$type=="sample",])
 
 ### Lowering tag-jumps ####
 
@@ -251,6 +245,10 @@ ggplot(tmp2, aes(x=as.factor(threshold), y=value)) +
         axis.text.x = element_text(angle=40, h=1),
         legend.position = "none")
 #since what we're looking for is so specific on the order of 0-10 haplotypes per sample, the stochasticity of richness is fine with me, that's just off-target contaminant reads.
+
+#for this it's more important that there are no remaining reads in the control PCRs.
+View(Climb_22_23_no_contas[["pcrs"]])
+#Yay, no control PCRs remaining after contaminant removal!
 
 ###### Pie charts of the noise in the dataset #####
 
@@ -320,36 +318,38 @@ ggplot(tmp.pcrs, aes(x=1, fill=artefact_type)) +
 ##### Data cleaning and Aggregation #####
 
 # Use tag-jump corrected metabarlist with the threshold identified above
-tmp <- tests[["t_5e-04"]]
+tmp <- tests[["t_0"]]
+
+#The line above removes filtering based on putative tag-jumps since the diversity and abundance characteristics that filter is based on were just off-target reads.
 
 # Subset on MOTUs: we keep motus that are defined as TRUE following the
 # three criteria below (sum of three TRUE is equal to 3 with the rowSums function)
 tmp <- subset_metabarlist(tmp, "motus",
                           indices = rowSums(tmp$motus[,c("not_an_extraction_conta", 
-                                                         #"target_taxon",
+                                                         #"target_taxon",#this is based on obitools assignment and we're going with usearch annotation
                                                          "not_a_pcr_conta",
-                                                         #"not_degraded",
+                                                         #"not_degraded", #this is based on obitools assignment and we're going with usearch annotation
                                                          "not_a_field_neg_conta",
                                                          "hap_match")]) == 4)
 summary_metabarlist(tmp)
 
 # Subset on pcrs and keep only samples, no controls
-Climb_22_23_clean <- subset_metabarlist(tmp, "pcrs",
+Climb_22_23_hap_matched <- subset_metabarlist(tmp, "pcrs",
                                     indices = rowSums(tmp$pcrs[,c("low_contamination_level",
                                                                   "seqdepth_ok")]) == 2 &
                                       tmp$pcrs$type == "sample")
-summary_metabarlist(Climb_22_23_clean)
+summary_metabarlist(Climb_22_23_hap_matched)
 
-if(sum(colSums(Climb_22_23_clean$reads)==0)>0){print("empty motus present")}
-if(sum(rowSums(Climb_22_23_clean$reads)==0)>0){print("empty pcrs present")}
+if(sum(colSums(Climb_22_23_hap_matched$reads)==0)>0){print("empty motus present")}
+if(sum(rowSums(Climb_22_23_hap_matched$reads)==0)>0){print("empty pcrs present")}
 
-Climb_22_23_clean$motus$count = colSums(Climb_22_23_clean$reads)
-Climb_22_23_clean$pcrs$nb_reads_postmetabaR = rowSums(Climb_22_23_clean$reads)
-Climb_22_23_clean$pcrs$nb_motus_postmetabaR = rowSums(ifelse(Climb_22_23_clean$reads>0, T, F))
+Climb_22_23_hap_matched$motus$count = colSums(Climb_22_23_hap_matched$reads)
+Climb_22_23_hap_matched$pcrs$nb_reads_postmetabaR = rowSums(Climb_22_23_hap_matched$reads)
+Climb_22_23_hap_matched$pcrs$nb_motus_postmetabaR = rowSums(ifelse(Climb_22_23_hap_matched$reads>0, T, F))
 
 #look at abundance and richness before and after metabar filtering
 
-check <- melt(Climb_22_23_clean$pcrs[,c("nb_reads", "nb_reads_postmetabaR",
+check <- melt(Climb_22_23_hap_matched$pcrs[,c("nb_reads", "nb_reads_postmetabaR",
                                     "nb_motus", "nb_motus_postmetabaR")])
 check$type <- ifelse(grepl("motus", check$variable), "richness", "abundance")
 
@@ -369,32 +369,34 @@ tmp <- subset_metabarlist(Climb_22_23, table = "pcrs",
                           indices = Climb_22_23$pcrs$type == "sample")
 
 # Add sample biological information for checks
-tmp$pcrs$blood <- tmp$samples$Associated.Blood.Samples[match(tmp$pcrs$sample_id, rownames(tmp$samples))]
-tmp$pcrs$bay <- tmp$samples$Site.Name[match(tmp$pcrs$sample_id, rownames(tmp$samples))]
+tmp$pcrs$blood <- tmp$samples$Associated_Blood_Samples[match(tmp$pcrs$sample_id, rownames(tmp$samples))]
+tmp$pcrs$bay <- tmp$samples$Site[match(tmp$pcrs$sample_id, rownames(tmp$samples))]
 
-Climb_22_23_clean$pcrs$blood <-
-  Climb_22_23_clean$samples$blood[match(Climb_22_23_clean$pcrs$sample_id,
-                                    rownames(Climb_22_23_clean$samples))]
-Climb_22_23_clean$pcrs$bay <-
-  Climb_22_23_clean$samples$bay[match(Climb_22_23_clean$pcrs$sample_id,
-                                  rownames(Climb_22_23_clean$samples))]
+Climb_22_23_hap_matched$pcrs$blood <-
+  Climb_22_23_hap_matched$samples$blood[match(Climb_22_23_hap_matched$pcrs$sample_id,
+                                    rownames(Climb_22_23_hap_matched$samples))]
+Climb_22_23_hap_matched$pcrs$bay <-
+  Climb_22_23_hap_matched$samples$bay[match(Climb_22_23_hap_matched$pcrs$sample_id,
+                                  rownames(Climb_22_23_hap_matched$samples))]
 
 # Build PCoA ordinations
 mds1 <- check_pcr_repl(tmp,
                        groups = paste(tmp$pcrs$bay, tmp$pcrs$blood, sep = " | "))
-mds2 <- check_pcr_repl(Climb_22_23_clean,
+mds2 <- check_pcr_repl(Climb_22_23_hap_matched,
                        groups = paste(
-                         Climb_22_23_clean$pcrs$bay,
-                         Climb_22_23_clean$pcrs$blood,
+                         Climb_22_23_hap_matched$pcrs$bay,
+                         Climb_22_23_hap_matched$pcrs$blood,
                          sep = " | "))
 
 # Custom colors
 a <- mds1 + labs(color = "Bay | Blood") +
-  scale_color_manual(values = c("brown4", "brown1", "goldenrod4", "goldenrod1")) +
+  #scale_color_manual(values = c("brown4", "brown1", "goldenrod4", "goldenrod1")) +
+  scale_color_brewer("viridis")
   theme(legend.position = "none") +
   ggtitle("Raw data")
 b <- mds2 + labs(color = "Bay | Blood") +
-  scale_color_manual(values = c("brown4", "brown1", "goldenrod4", "goldenrod1")) +
+  #scale_color_manual(values = c("brown4", "brown1", "goldenrod4", "goldenrod1")) +
+  scale_color_brewer("viridis")
   ggtitle("Clean data")
 
 # Assemble plots
@@ -406,8 +408,9 @@ ggdraw() +
   draw_plot(b + guides(color=F, shape=F), x=0.42, y=0, width = 0.4, height = 1) +
   draw_grob(leg, x=0.4, y=0)
 
-##### Data aggregation #####
-Climb_22_23_agg <- aggregate_pcrs(Climb_22_23_clean)
+##### Data aggregation ##### 
+# can comment this out because the three PCR replicates per sample were already pooled before sequencing, but keeping it doesn't hurt anything.
+Climb_22_23_agg <- aggregate_pcrs(Climb_22_23_hap_matched)
 summary_metabarlist(Climb_22_23_agg)
 
 #very important after a subsetting
@@ -423,3 +426,4 @@ Climb_22_23_final <- subset_metabarlist(Climb_22_23_agg, table = "pcrs",
                                     indices = Climb_22_23_agg$pcrs$nb_reads>0)
 
 summary_metabarlist(Climb_22_23_final)
+
