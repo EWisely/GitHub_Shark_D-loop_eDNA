@@ -40,6 +40,7 @@ rownames(Metabar_formatted_reads)<-reads_rownames
 
 
 #ASVs/motus
+<<<<<<< Updated upstream
 Dada2_ecotagged_usearched_results<-read.csv("data/21_Climb2/04_Usearch_annotated/annotated_23bthaps_2021_results.tab", sep="\t")
 Dada2_ecotagged_usearched_results<- column_to_rownames(Dada2_ecotagged_usearched_results, var = "ID")
 Dada2_ecotagged_usearched_results<-as.data.frame(Dada2_ecotagged_usearched_results)
@@ -48,6 +49,16 @@ write.csv(Dada2_ecotagged_usearched_results, "data/21_Climb2/04_Usearch_annotate
 
 #aggregate annotations into three new columns, then re-import.
 Dada2_ecotagged_usearched_results1<-read.csv("data/21_Climb2/04_Usearch_annotated/annotated_23bthaps_2021_results_aggregated_annots.csv")
+=======
+Dada2_ecotagged_usearched_results<-read.csv("data/21_Climb2/04_Usearch_annotated/annotated_22_bthaps_21_results_300-450.tab", sep="\t")
+Dada2_ecotagged_usearched_results<- column_to_rownames(Dada2_ecotagged_usearched_results, var = "ID")
+Dada2_ecotagged_usearched_results<-as.data.frame(Dada2_ecotagged_usearched_results)
+
+write.csv(Dada2_ecotagged_usearched_results, "data/21_Climb2/04_Usearch_annotated/annotated_22_bthaps_2021_results_300-450.csv")
+
+#aggregate annotations into three new columns, then re-import.
+Dada2_ecotagged_usearched_results1<-read.csv("data/21_Climb2/04_Usearch_annotated/annotated_22_bthaps_2021_results_300-450_aggregated_annots.csv")
+>>>>>>> Stashed changes
 Dada2_ecotagged_usearched_results1<- column_to_rownames(Dada2_ecotagged_usearched_results1, var = "X")
 Dada2_ecotagged_usearched_results1<-as.data.frame(Dada2_ecotagged_usearched_results1)
 

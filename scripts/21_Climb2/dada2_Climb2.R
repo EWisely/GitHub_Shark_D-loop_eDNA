@@ -187,8 +187,23 @@ table(nchar(getSequences(seqtab)))
 plot(length_distribution)
 #target length without primers =395bp for C.limb2 according to Sanger data analysis. But 435 according to primer design in Geneious (re-check this). So set the min and max -15bp, +5bp?
 #in the plot, most sequences (almost all, were over 400 and under 455)
+<<<<<<< Updated upstream
 lengthMin<-"380"
 lengthMax<-"440"
+=======
+# lengthMin<-"380"
+# lengthMax<-"440"
+
+#more stringent 
+#lengthMin<-"390"
+#lengthMax<-"440"
+
+#less stringent 
+lengthMin<-"300"
+lengthMax<-"450"
+
+
+>>>>>>> Stashed changes
 saveRDS(length_distribution, paste0(dadapath, "/7_length_distribution", "Climb2_21", ".rds"))
 print(paste0(dadapath, "/7_length_distribution", "Climb2_21", ".rds"))
 

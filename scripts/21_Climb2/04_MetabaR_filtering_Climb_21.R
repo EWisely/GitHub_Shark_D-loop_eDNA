@@ -139,7 +139,14 @@ table(Climb_21$motus$not_degraded) / nrow(Climb_21$motus)
 
 # Flag poorly-matched haplotypes (TRUE) vs. well-matched haplotypes (FALSE)
 Climb_21$motus$hap_match <-
+<<<<<<< Updated upstream
   ifelse(Climb_21$motus$annot_pctid < 95, F, T)
+=======
+  ifelse(Climb_21$motus$annot_pctid <100, F, T)
+
+Climb_21$motus$hap_length <-
+  ifelse(Climb_21$motus$seq_len <393, F, T)
+>>>>>>> Stashed changes
 
 # Proportion of each of these over total number of MOTUs
 table(Climb_21$motus$hap_match) / nrow(Climb_21$motus)
@@ -248,7 +255,11 @@ ggplot(tmp2, aes(x=as.factor(threshold), y=value)) +
 
 
 Climb_21_hap_match <- subset_metabarlist(Climb_21_no_contas, "motus", 
+<<<<<<< Updated upstream
                                          indices = Climb_21_no_contas$motus$annot_pctid > 95)
+=======
+                                         indices = Climb_21_no_contas$motus$seq_len >393)
+>>>>>>> Stashed changes
 
 summary_metabarlist(Climb_21_hap_match)
 #very important after a subsetting
@@ -274,8 +285,8 @@ summary_metabarlist(Climb_21_hap_match)
 
 # Create a table of MOTUs quality criteria
 # noise is identified as FALSE in Climb_21, the "!" transforms it to TRUE
-motus.qual <- !Climb_21$motus[,c("not_an_extraction_conta", "target_taxon", "not_degraded", "hap_match")]
-colnames(motus.qual) <- c("extraction_conta", "untargeted_taxon", "degraded_seq", "no_hap_match")
+motus.qual <- !Climb_21$motus[,c("not_an_extraction_conta", "target_taxon", "not_degraded", "hap_match", "hap_length")]
+colnames(motus.qual) <- c("extraction_conta", "untargeted_taxon", "degraded_seq", "no_hap_match","short_hap")
 
 # Proportion of MOTUs potentially artifactual (TRUE) based on the criteria used
 prop.table(table(apply(motus.qual, 1, sum) > 0))
@@ -367,8 +378,13 @@ tmp <- tests[["t_0.05"]]tmp <- tests[["t_0.05"]]_hap.pcrs, aes(x=1, fill=artefac
 ##### Data cleaning and Aggregation #####
 
 # Use tag-jump corrected metabarlist with the threshold identified above
+<<<<<<< Updated upstream
 tmp <- tests[["t_0.05"]]
 
+=======
+tmp <- tests[["t_0.03"]]
+#tmp <- tests[["t_0"]]
+>>>>>>> Stashed changes
 #The line above removes filtering based on putative tag-jumps since the diversity and abundance characteristics that filter is based on were just off-target reads.
 
 # Subset on MOTUs: we keep motus that are defined as TRUE following the
@@ -378,8 +394,9 @@ tmp <- subset_metabarlist(tmp, "motus",
                                                          "target_taxon",#this is based on obitools assignment and we're going with usearch annotation
                                                          "not_a_pcr_conta",
                                                          "not_degraded", #this is based on obitools assignment and we're going with usearch annotation
-                                                         "not_a_field_neg_conta",
-                                                         "hap_match")]) == 6)
+                                                         "not_a_field_neg_conta"
+                                                         #,"hap_match"
+                                                         )]) == 5)
 summary_metabarlist(tmp)
 
 # Subset on pcrs and keep only samples, no controls
@@ -412,7 +429,12 @@ ggplot(data = check, aes(x = variable, y = value)) +
 #### Make a cleaned file that only requires usearch annotation (and not requiring obitools percent ID or assignment)####
 
 # Use tag-jump corrected metabarlist with the threshold identified above
+<<<<<<< Updated upstream
 tmp_hap <- tests[["t_0.05"]]
+=======
+tmp_hap <- tests[["t_0.03"]]
+#tmp_hap <- tests[["t_0"]]
+>>>>>>> Stashed changes
 
 #The line above removes filtering based on putative tag-jumps since the diversity and abundance characteristics that filter is based on were just off-target reads.
 
@@ -424,7 +446,8 @@ tmp_hap <- subset_metabarlist(tmp_hap, "motus",
                                                          "not_a_pcr_conta",
                                                          #"not_degraded", #this is based on obitools assignment and we're going with usearch annotation
                                                          "not_a_field_neg_conta",
-                                                         "hap_match")]) == 4)
+                                                         "hap_match",
+                                                         "hap_length")]) == 5)
 summary_metabarlist(tmp_hap)
 
 # Subset on pcrs and keep only samples, no controls
@@ -437,9 +460,9 @@ summary_metabarlist(Climb_21_hap_matched_clean)
 if(sum(colSums(Climb_21_hap_matched_clean$reads)==0)>0){print("empty motus present")}
 if(sum(rowSums(Climb_21_hap_matched_clean$reads)==0)>0){print("empty pcrs present")}
 
-Climb_21_hap_matched_clean$motus$count = colSums(Climb_21_clean$reads)
-Climb_21_hap_matched_clean$pcrs$nb_reads_postmetabaR = rowSums(Climb_21_clean$reads)
-Climb_21_hap_matched_clean$pcrs$nb_motus_postmetabaR = rowSums(ifelse(Climb_21_clean$reads>0, T, F))
+Climb_21_hap_matched_clean$motus$count = colSums(Climb_21_hap_matched_clean$reads)
+Climb_21_hap_matched_clean$pcrs$nb_reads_postmetabaR = rowSums(Climb_21_hap_matched_clean$reads)
+Climb_21_hap_matched_clean$pcrs$nb_motus_postmetabaR = rowSums(ifelse(Climb_21_hap_matched_clean$reads>0, T, F))
 
 #look at abundance and richness before and after metabar filtering
 
@@ -473,8 +496,14 @@ Climb_21_agg$pcrs$nb_reads <- rowSums(Climb_21_agg$reads)
 Climb_21_agg$pcrs$nb_motus <- rowSums(Climb_21_agg$reads>0)
 
 #subset the metabarlist to all PCRs with more than 0 reads
+Climb_21_species <- subset_metabarlist(Climb_21_clean, table = "pcrs",
+                                    indices = Climb_21_clean$pcrs$nb_reads>0)
+
+summary_metabarlist(Climb_21_species)
+
+#subset the metabarlist to all PCRs with more than 0 reads
 Climb_21_final <- subset_metabarlist(Climb_21_agg, table = "pcrs",
-                                    indices = Climb_21_agg$pcrs$nb_reads>0)
+                                       indices = Climb_21_agg$pcrs$nb_reads>0)
 
 summary_metabarlist(Climb_21_final)
 
