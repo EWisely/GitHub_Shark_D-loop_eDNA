@@ -229,11 +229,11 @@ geom_bar(aes(color=annot_hap, fill=annot_hap), stat="identity", position="stack"
 # 
 ggsave("data/21_Climb2/06_Phyloseq_viz/Sample_ASV_read_counts_by_annot_hap.jpg")
 
-# 
-# Climb_21_hap_merge.ps
-# sample_variables(Climb_21_hap_merge.ps)
-# rank_names(Climb_21_hap_merge.ps)
-# tax_table(Climb_21_hap_merge.ps)
+
+Climb_21_hap_merge.ps
+sample_variables(Climb_21_hap_merge.ps)
+rank_names(Climb_21_hap_merge.ps)
+tax_table(Climb_21_hap_merge.ps)
 
 #calculate Bray-Curtis or Sørensen dissimilarity between blood and associated waters.
 
