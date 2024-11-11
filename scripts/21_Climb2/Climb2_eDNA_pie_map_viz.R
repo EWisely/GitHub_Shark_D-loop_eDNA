@@ -9,20 +9,23 @@ library(car)  # 'pointLabel' function
 library(dplyr)
 library(basemaps)
 library(ggrepel)
+library(png)
 
+citation(package="scatterpie")
+citation(package="geodata")
 ##### Prepare the data #####
 
 #load data to make scatterpies with
-blood_haps<- read.csv("metadata/percentage_of_haps_in_bloods.csv")
+blood_haps<- read.csv("data/blood_vs_water_haps/percentage_of_haps_in_bloods_SC21.csv")
 blood_haps<-blood_haps%>% arrange(total_bt_sharks)
-blood_haps<-blood_haps[-6, ]
+#blood_haps<-blood_haps[-6, ]
 blood_haps$radius <- .0017* blood_haps$total_bt_sharks
 
 
 
 #make scatterpies
 ggplot() + geom_scatterpie(aes(x=Long, y=Lat, group=Site), data=blood_haps,
-                           cols=c("count_hap1", "count_hap2")) + coord_equal()
+                           cols=c("count_hap20", "count_hap22")) + coord_equal()
 
 
 
@@ -36,10 +39,10 @@ p <- ggplot(world, aes(long, lat)) +
 blood_haps$radius <- .0017* blood_haps$total_bt_sharks
 
 p+ geom_scatterpie(aes(x=Long, y=Lat, group=Site, r=radius), data=blood_haps,
-                   cols=c("percent_hap1", "percent_hap2"), alpha=.7) + 
+                   cols=c("percent_hap20", "percent_hap22"), alpha=.7) + 
   #coord_equal()+
   scale_fill_manual(values = c("orange","violet"),
-                    labels=c("haplotype 1","haplotype 2"))+
+                    labels=c("haplotype 20","haplotype 22"))+
   coord_sf(xlim = c(-89, -90), ylim = c(-.6, -1))
 
 
@@ -108,7 +111,7 @@ island<-base_map+
 island
 
 #make the pies
-blood_haps<- read.csv("metadata/percentage_of_haps_in_bloods.csv")
+blood_haps<- read.csv("data/blood_vs_water_haps/percentage_of_haps_in_bloods_SC21.csv")
 blood_haps<-blood_haps%>% arrange(total_bt_sharks)
 blood_haps$radius <- .0017* blood_haps$total_bt_sharks
 blood_haps_SCzoom<-blood_haps[-c(2, 3), ]
@@ -118,7 +121,7 @@ blood_haps_SCzoom<-blood_haps[-c(2, 3), ]
 #The code below creates the following error:Error: Discrete value supplied to continuous scale
 #island+ geom_scatterpie(data=blood_haps,
 #                       mapping = aes(x=Long, y=Lat, group=Site, r=radius),
-#                       cols=c("percent_hap1", "percent_hap2"))
+#                       cols=c("percent_hap20", "percent_hap22"))
 
 #So, try without bathymetry raster
 island_vect<-ggplot()+
@@ -128,13 +131,13 @@ island_vect
 #add pies
 
 pie_map<-island_vect+ geom_scatterpie(aes(x=Long, y=Lat, group=Site, r=radius), data=blood_haps_SCzoom,
-                             cols=c("percent_hap1", "percent_hap2"), alpha=.8, color="NA") + 
+                             cols=c("percent_hap20", "percent_hap22"), alpha=.8, color="NA") + 
   geom_label_repel(aes(x=blood_haps_SCzoom$Long, y=blood_haps_SCzoom$Lat, 
                        label = blood_haps_SCzoom$Site), 
                    size = 3, nudge_x = -.04, nudge_y = 0.06,point.padding=2.8,
                    segment.colour = "tan")+
   scale_fill_manual(values = c("red","pink"),
-                    labels=c("haplotype 1","haplotype 2"))+
+                    labels=c("haplotype 20","haplotype 22"))+
   geom_shadowpoint()+
   xlab("Longitude")+
   ylab("Latitude")+
@@ -143,7 +146,7 @@ pie_map<-island_vect+ geom_scatterpie(aes(x=Long, y=Lat, group=Site, r=radius), 
 
 pie_map
 
-ggsave("viz/SanCristóbal2021_Climb2_bloodhaps.jpg")
+#ggsave("viz/SanCristóbal2021_Climb2_bloodhaps.jpg")
 
 #Next steps:
 #add a Zoomed-in box for Rosa Blanca 1 and 2 separately in the bottom right of the figure.
@@ -171,13 +174,13 @@ island_vect+
 RosaBlanca_pie_map<-island_vect+ 
   coord_sf(xlim = c(-89.38, -89.32), ylim = c(-.85, -.8))+
   geom_scatterpie(aes(x=Long, y=Lat, group=Site, r=radius), data=RosaBlanca_blood_haps,
-                  cols=c("percent_hap1", "percent_hap2"), alpha=.8, color="NA") + 
+                  cols=c("percent_hap20", "percent_hap22"), alpha=.8, color="NA") + 
   geom_label_repel(aes(x=RosaBlanca_blood_haps$Long, y=RosaBlanca_blood_haps$Lat, 
                        label = RosaBlanca_blood_haps$Site), 
                    size = 8,point.padding=2.8,nudge_x = .01, nudge_y = -0.015,
                    segment.colour = "tan")+
   scale_fill_manual(values = c("red","pink"),
-                    labels=c("haplotype 1","haplotype 2"))+
+                    labels=c("haplotype 20","haplotype 22"))+
   geom_shadowpoint()+
   xlab("Longitude")+
   ylab("Latitude")+
@@ -221,13 +224,13 @@ island_map
 
 pie_map2<-island_map +
   geom_scatterpie(aes(x=blood_haps_SCzoom$Long, y=blood_haps_SCzoom$Lat, group=Site, r=radius), data=blood_haps_SCzoom,
-                  cols=c("percent_hap1", "percent_hap2"), alpha=1, color="NA") + 
+                  cols=c("percent_hap20", "percent_hap22"), alpha=1, color="NA") + 
   #geom_label_repel(aes(x=blood_haps_SCzoom$Long, y=blood_haps_SCzoom$Lat, 
   #                     label = blood_haps_SCzoom$Site), 
   #                 size = 3, nudge_x = -.04, nudge_y = 0.06,point.padding=2.8,
   #                 segment.colour = "tan")+
   scale_fill_manual(values = c("red","pink"),
-                    labels=c("haplotype 1","haplotype 2"))+
+                    labels=c("haplotype 20","haplotype 22"))+
   #geom_shadowpoint()+
   xlab("Longitude")+
   ylab("Latitude")+
@@ -251,7 +254,7 @@ basepic<-readPNG("viz/bathypic.png")
 #add the png as a background image
 
 island_vect+ geom_scatterpie(aes(x=Long, y=Lat, group=Site, r=radius), data=blood_haps,
-                             cols=c("percent_hap1", "percent_hap2"), alpha=1) + 
+                             cols=c("percent_hap20", "percent_hap22"), alpha=1) + 
   scale_fill_manual(values = c("orange","violet"),
                     labels=c("haplotype 1","haplotype 2"))+
   coord_sf(xlim = c(-89, -90), ylim = c(-.6, -1))+
@@ -265,7 +268,7 @@ ggplot()+
                                width = unit(1,"npc"),
                                height = unit(1,"npc")))+
   geom_scatterpie(aes(x=Long, y=Lat, group=Site, r=radius), data=blood_haps,
-                  cols=c("percent_hap1", "percent_hap2"), alpha=1) + 
+                  cols=c("percent_hap20", "percent_hap22"), alpha=1) + 
   scale_fill_manual(values = c("orange","violet"),
                     labels=c("haplotype 1","haplotype 2"))+
   coord_sf(xlim = c(-89, -90), ylim = c(-.6, -1))
@@ -273,8 +276,8 @@ ggplot()+
   
 
 island_vect+ geom_scatterpie(aes(x=Long, y=Lat, group=Site, r=radius), data=blood_haps,
-                             cols=c("percent_hap1", "percent_hap2"), alpha=1) + 
+                             cols=c("percent_hap20", "percent_hap22"), alpha=1) + 
   scale_fill_manual(values = c("orange","violet"),
-                    labels=c("haplotype 1","haplotype 2"))+
+                    labels=c("haplotype 20","haplotype 22"))+
   coord_sf(xlim = c(-89, -90), ylim = c(-.6, -1))
 

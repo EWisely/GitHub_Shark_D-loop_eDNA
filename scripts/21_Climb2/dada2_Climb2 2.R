@@ -7,19 +7,18 @@
 ### following this tutorial https://benjjneb.github.io/dada2/tutorial.html ###
 #install dada2
 ## try http:// if https:// URLs are not supported
-# if (!requireNamespace("BiocManager", quietly=TRUE))
+#if (!requireNamespace("BiocManager", quietly=TRUE))
 #  install.packages("BiocManager")
-# BiocManager::install("dada2")
+#BiocManager::install("dada2")
 #and this package which can do lca https://rdrr.io/github/ammararuby/MButils/man/
 #install.packages("remotes")
 #remotes::install_github("ammararuby/MButils")
 
 library(dada2); packageVersion("dada2")
 help(package="dada2")
-citation(package="dada2")
 ## the tutorial is based on version '1.16.0' but this is version 1.26.0
 #setwd("/Users/Eldridge/Desktop/Marine Population Genetics with eDNA/Dada2_Climb2_analysis")
-path <- "/Users/Eldridge/Desktop/Marine Population Genetics with eDNA/Dada2_Climb2_analysis/Climb2_fastqs/cutadapt/2nd_cutadapt/annotated_and_concatenated/"
+#path <- "/Users/Eldridge/Desktop/Marine Population Genetics with eDNA/Dada2_Climb2_analysis/Climb2_fastqs/cutadapt/2nd_cutadapt/annotated_and_concatenated/"
 list.files(path)
 
 library(plyr)
@@ -99,7 +98,7 @@ print("## Filter and Trim ##")
 #out <- filterAndTrim(fwd=fnFs,filt=filtFs, rev=fnRs, filt.rev=filtRs, truncLen=c(220,180), maxN=0, maxEE=2, verbose=TRUE, multithread=TRUE) #removed trunLen=100 replaced with truncLen=c(220,180),removed matchIDs=TRUE
 
 #expected insert length is 435, so shouldn't truncate forward and reverse reads below 440/2+20=240 minimum... can filter for length of total fragment later.
-#matchIDs=TRUE could be messed up by the annotation step before putting them into this pipeline... truncLen=c(280,200)
+#matchIDs=TRUE could be messed up by the annotation step before putting them into this pipeline...
 
 out <- filterAndTrim(fwd=fnFs,filt=filtFs, rev=fnRs, filt.rev=filtRs, maxN=0, maxEE=2, verbose=TRUE, multithread=TRUE)
 
@@ -188,18 +187,8 @@ table(nchar(getSequences(seqtab)))
 plot(length_distribution)
 #target length without primers =395bp for C.limb2 according to Sanger data analysis. But 435 according to primer design in Geneious (re-check this). So set the min and max -15bp, +5bp?
 #in the plot, most sequences (almost all, were over 400 and under 455)
-# lengthMin<-"380"
-# lengthMax<-"440"
-
-#more stringent 
-#lengthMin<-"390"
-#lengthMax<-"440"
-
-#less stringent 
-lengthMin<-"300"
-lengthMax<-"450"
-
-
+lengthMin<-"380"
+lengthMax<-"440"
 saveRDS(length_distribution, paste0(dadapath, "/7_length_distribution", "Climb2_21", ".rds"))
 print(paste0(dadapath, "/7_length_distribution", "Climb2_21", ".rds"))
 
@@ -224,9 +213,6 @@ dim(seqtab2.nochim)
 sum(seqtab2.nochim)/sum(seqtab2)
 
 #99.5% non-chimeras in the trimmed seqtab2 
-#98% for the relaxed length filtering allowing shorter seqs
-#99.1%after strict length filtering
-#97.85% for relaxed length with maxee set to 1 and no trunclen
 
 #Check des reads, table finale
 getN <- function(x) sum(getUniques(x))
@@ -259,16 +245,14 @@ print(paste0(dadapath, "/9_", asvname,"_asv.rds"))
 #####copied from dada2_output_files.R from the french abyss project and edited
 #Path for inputs (dada_dir or output_merge) and outputs
 #ASV Table 
-finaltab = readRDS("/Users/Eldridge/Desktop/Marine Population Genetics with eDNA/Dada2_Climb2_analysis/9_Climb2_21_asv.rds")
+finaltab = readRDS("9_Climb2_21_asv.rds")
 #I used my GoC MyBaits sequence target file for taxonomic assignment.  It's all GenBank mito sequences from Fish, Sharks,Cephalopods, and Marine Mammals found in the GoC according to Morzaria-Luna et al. as of download in December 2022.
-#rdpbank = ("/Users/Eldridge/Desktop/Marine Population Genetics with eDNA/MyBaits Design/baits_fasta/fasta_out/max_marine_mito.rdp.fasta")
+rdpbank = ("/Users/Eldridge/Desktop/Marine Population Genetics with eDNA/MyBaits Design/baits_fasta/fasta_out/max_marine_mito.rdp.fasta")
 
 
-# print("## Assigning ASV taxonomy ## ")
-
-# taxa_max_marine_mito_baits <- assignTaxonomy(finaltab, rdpbank, minBoot=50, verbose=TRUE, outputBootstraps=TRUE, tryRC=TRUE, multithread=TRUE)
-# saveRDS(taxa_max_marine_mito_baits, paste0(dadapath, "/9_taxonomy_max_marine_mito_baits.rds"))
-
+print("## Assigning ASV taxonomy ## ")
+taxa_max_marine_mito_baits <- assignTaxonomy(finaltab, rdpbank, minBoot=50, verbose=TRUE, outputBootstraps=TRUE, tryRC=TRUE, multithread=TRUE)
+saveRDS(taxa_max_marine_mito_baits, paste0(dadapath, "/9_taxonomy_max_marine_mito_baits.rds"))
 
 # Create output data
 asv_seqs <- colnames(finaltab)
@@ -280,7 +264,6 @@ for (i in 1:dim(finaltab)[2]) {
 print("Write ASV fasta file")
 asv_fasta <- c(rbind(asv_headers, asv_seqs))
 write(asv_fasta, paste0(dadapath, "/10_ASVs.fasta"))
-write(asv_fasta, "../2024_Analysis_Shark_D-loop_eDNA/data/21_Climb2/02_Dada2_ASVs/10_ASVs.fasta")
 # Count table
 print("Write count table to file")
 asv_tab <- as.data.frame(t(finaltab))
@@ -291,7 +274,6 @@ ClusterID <- sub(">", "", asv_headers)
 asv_tab <- cbind(ClusterID, asv_tab)
 asv_tab <-cbind(asv_tab, asv_seqs)
 write.table(asv_tab, paste0(dadapath, "/10_ASVs_counts.tsv"), sep="\t", quote=F, col.names=T, row.names=F)
-write.table(asv_tab, "../2024_Analysis_Shark_D-loop_eDNA/data/21_Climb2/02_Dada2_ASVs/10_ASVs_counts.tsv")
 # Taxa table
 print("Write taxa table to file")
 asv_tax <- as.data.frame(taxa_max_marine_mito_baits)#2
@@ -312,7 +294,6 @@ metabar_reads_table <- as.data.frame(t(asv_tab))
 metabar_reads_table <-
   rownames_to_column(metabar_reads_table, var = "id")
 write_csv(metabar_reads_table,
-          "../2024_Analysis_Shark_D-loop_eDNA/data/21_Climb2/04_Usearch_annotated/21_Climb_dada2_metabar_reads_table.csv")
+          "data/21_Climb2/04_Usearch_annotated/21_Climb_dada2_metabar_reads_table.csv")
 
-setwd("~/Desktop/Marine Population Genetics with eDNA/2024_Analysis_Shark_D-loop_eDNA/")
 

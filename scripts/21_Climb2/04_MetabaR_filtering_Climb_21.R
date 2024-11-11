@@ -70,7 +70,7 @@ Climb_21 <- contaslayer(Climb_21,
 table(Climb_21$motus$not_a_field_neg_conta)
 
 # Compute relative abundance of all extraction contaminants together
-a <- data.frame(conta.relab = rowSums(Climb_21$reads[,!Climb_21$motus$not_an_extraction_conta]) /
+a <- data.frame(conta.relab = rowSums(Climb_21$reads[,!Climb_21$motus$not_a_field_neg_conta]) /
                   rowSums(Climb_21$reads))
 # Add information on control types
 a$control_type <- Climb_21$pcrs$control_type[match(rownames(a), rownames(Climb_21$pcrs))]
@@ -139,14 +139,10 @@ table(Climb_21$motus$not_degraded) / nrow(Climb_21$motus)
 
 # Flag poorly-matched haplotypes (TRUE) vs. well-matched haplotypes (FALSE)
 Climb_21$motus$hap_match <-
-<<<<<<< Updated upstream
-  ifelse(Climb_21$motus$annot_pctid < 95, F, T)
-=======
   ifelse(Climb_21$motus$annot_pctid <100, F, T)
 
 Climb_21$motus$hap_length <-
   ifelse(Climb_21$motus$seq_len <393, F, T)
->>>>>>> Stashed changes
 
 # Proportion of each of these over total number of MOTUs
 table(Climb_21$motus$hap_match) / nrow(Climb_21$motus)
@@ -165,7 +161,7 @@ table(Climb_21$motus$target_taxon,
 
 ggplot(Climb_21$pcrs, aes(nb_reads)) +
   geom_histogram(bins=40, color="grey", fill="white") +
-  geom_vline(xintercept = 1e02, lty=2, color="orange") + # threshold
+  geom_vline(xintercept = 1e01, lty=2, color="orange") + # threshold
   scale_x_log10() +
   labs(x="# Reads (with all MOTUs and PCRs)",
        y="# PCRs") +
@@ -195,7 +191,7 @@ summary_metabarlist(Climb_21_no_contas)
 
 ggplot(Climb_21$pcrs, aes(nb_reads)) +
   geom_histogram(bins=40, color="grey", fill="white") +
-  geom_vline(xintercept = 1e02, lty=2, color="orange") + # threshold
+  geom_vline(xintercept = 1e01, lty=2, color="orange") + # threshold
   scale_x_log10() +
   labs(x="# Reads (with all MOTUs and PCRs)",
        y="# PCRs") +
@@ -203,10 +199,10 @@ ggplot(Climb_21$pcrs, aes(nb_reads)) +
   theme(panel.grid = element_blank())
 
 # Flag pcrs with an acceptable sequencing depth (TRUE) or inacceptable one (FALSE)
-Climb_21_no_contas$pcrs$seqdepth_ok <- ifelse(Climb_21_no_contas$pcrs$nb_reads < 1e02, F, T)
+Climb_21_no_contas$pcrs$seqdepth_ok <- ifelse(Climb_21_no_contas$pcrs$nb_reads < 1e01, F, T)
 
 # Flag pcrs with an acceptable sequencing depth (TRUE) or inacceptable one (FALSE) in full metabarlist too
-Climb_21$pcrs$seqdepth_ok <- ifelse(Climb_21$pcrs$nb_reads < 1e02, F, T)
+Climb_21$pcrs$seqdepth_ok <- ifelse(Climb_21$pcrs$nb_reads < 1e01, F, T)
 
 # Proportion of each of these over total number of pcrs, control excluded
 table(Climb_21_no_contas$pcrs$seqdepth_ok[Climb_21_no_contas$pcrs$type=="sample"]) /
@@ -240,7 +236,7 @@ tmp2 <- melt(tmp, id.vars=colnames(tmp)[-grep("abundance|richness", colnames(tmp
 
 ggplot(tmp2, aes(x=as.factor(threshold), y=value)) +
   geom_boxplot(color="grey40") +
-  geom_vline(xintercept = which(levels(as.factor(tmp2$threshold)) == "0.05"), col="orange", lty=2) +
+  geom_vline(xintercept = which(levels(as.factor(tmp2$threshold)) == "0.03"), col="orange", lty=2) +
   geom_jitter(aes(color=controls), width = 0.2, alpha=0.5) +
   scale_color_manual(values = c("brown", "red", "cyan4","pink"), na.value = "darkgrey") +
   facet_wrap(~variable+controls, scale="free_y", ncol=5) +
@@ -255,11 +251,7 @@ ggplot(tmp2, aes(x=as.factor(threshold), y=value)) +
 
 
 Climb_21_hap_match <- subset_metabarlist(Climb_21_no_contas, "motus", 
-<<<<<<< Updated upstream
-                                         indices = Climb_21_no_contas$motus$annot_pctid > 95)
-=======
                                          indices = Climb_21_no_contas$motus$seq_len >393)
->>>>>>> Stashed changes
 
 summary_metabarlist(Climb_21_hap_match)
 #very important after a subsetting
@@ -278,7 +270,7 @@ summary_metabarlist(Climb_21)
 summary_metabarlist(Climb_21_no_contas)
 summary_metabarlist(Climb_21_hap_match)
 
-#looks like 0.05 is where the extraction and field negative controls drop off.
+#looks like 0.03 is where the extraction and field negative controls drop off.
 
 
 ###### Pie charts of the noise in the dataset #####
@@ -338,53 +330,13 @@ tmp.pcrs <- as.data.frame(gsub("^$", "not_artefactual", tmp.pcrs))
 
 colnames(tmp.pcrs) <- "artefact_type"
 
-ggplot(# Use tag-jump corrected metabarlist with the threshold identified above
 # Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-# Use tag-jump corrected metabarlist with the threshold identified above
-tmp <- tests[["t_0.05"]]tmp <- tests[["t_0.05"]]_hap.pcrs, aes(x=1, fill=artefact_type)) +
-  geom_bar() +  xlim(0, 2) +
-  labs(fill="Artifact type") +
-  coord_polar(theta="y") + theme_void() +
-  scale_fill_brewer(palette = "Set3") +
-  theme(legend.direction = "vertical") +
-  ggtitle("PCR artefacts overview")
 
 ##### Data cleaning and Aggregation #####
 
 # Use tag-jump corrected metabarlist with the threshold identified above
-<<<<<<< Updated upstream
-tmp <- tests[["t_0.05"]]
-
-=======
 tmp <- tests[["t_0.03"]]
 #tmp <- tests[["t_0"]]
->>>>>>> Stashed changes
 #The line above removes filtering based on putative tag-jumps since the diversity and abundance characteristics that filter is based on were just off-target reads.
 
 # Subset on MOTUs: we keep motus that are defined as TRUE following the
@@ -400,11 +352,17 @@ tmp <- subset_metabarlist(tmp, "motus",
 summary_metabarlist(tmp)
 
 # Subset on pcrs and keep only samples, no controls
+# Climb_21_clean <- subset_metabarlist(tmp, "pcrs",
+#                                     indices = rowSums(tmp$pcrs[,c("low_contamination_level",
+#                                                                   "seqdepth_ok")]) == 2 &
+#                                       tmp$pcrs$type == "sample")
+
+#subset without sequencing depth filter
 Climb_21_clean <- subset_metabarlist(tmp, "pcrs",
-                                    indices = rowSums(tmp$pcrs[,c("low_contamination_level",
-                                                                  "seqdepth_ok")]) == 2 &
-                                      tmp$pcrs$type == "sample")
+                                              indices = tmp$pcrs$low_contamination_level ==TRUE &
+                                                tmp$pcrs$type == "sample")
 summary_metabarlist(Climb_21_clean)
+
 
 if(sum(colSums(Climb_21_clean$reads)==0)>0){print("empty motus present")}
 if(sum(rowSums(Climb_21_clean$reads)==0)>0){print("empty pcrs present")}
@@ -429,12 +387,8 @@ ggplot(data = check, aes(x = variable, y = value)) +
 #### Make a cleaned file that only requires usearch annotation (and not requiring obitools percent ID or assignment)####
 
 # Use tag-jump corrected metabarlist with the threshold identified above
-<<<<<<< Updated upstream
-tmp_hap <- tests[["t_0.05"]]
-=======
 tmp_hap <- tests[["t_0.03"]]
 #tmp_hap <- tests[["t_0"]]
->>>>>>> Stashed changes
 
 #The line above removes filtering based on putative tag-jumps since the diversity and abundance characteristics that filter is based on were just off-target reads.
 
@@ -456,6 +410,14 @@ Climb_21_hap_matched_clean <- subset_metabarlist(tmp_hap, "pcrs",
                                                                    "seqdepth_ok")]) == 2 &
                                        tmp_hap$pcrs$type == "sample")
 summary_metabarlist(Climb_21_hap_matched_clean)
+
+#subset without sequencing depth filter
+Climb_21_hap_matched_clean <- subset_metabarlist(tmp_hap, "pcrs",
+                                     indices = tmp$pcrs$low_contamination_level ==TRUE &
+                                       tmp$pcrs$type == "sample")
+summary_metabarlist(Climb_21_hap_matched_clean)
+
+
 
 if(sum(colSums(Climb_21_hap_matched_clean$reads)==0)>0){print("empty motus present")}
 if(sum(rowSums(Climb_21_hap_matched_clean$reads)==0)>0){print("empty pcrs present")}
@@ -485,7 +447,7 @@ summary_metabarlist(Climb_21_clean)
 
 ##### Data aggregation ##### 
 # can comment this out because the three PCR replicates per sample were already pooled before sequencing, but keeping it doesn't hurt anything.
-Climb_21_agg <- aggregate_pcrs(Climb_21_hap_matched_clean)
+Climb_21_agg <- aggregate_motus(Climb_21_hap_matched_clean, groups = Climb_21_hap_matched_clean$motus$annot_hap)
 summary_metabarlist(Climb_21_agg)
 #very important after a subsetting
 
@@ -506,4 +468,35 @@ Climb_21_final <- subset_metabarlist(Climb_21_agg, table = "pcrs",
                                        indices = Climb_21_agg$pcrs$nb_reads>0)
 
 summary_metabarlist(Climb_21_final)
+
+#### Make a csv that substitutes motus$SCIENTIFIC_NAME for motu_id and puts it as colnames with pcr$rownames and read_numbers from Climb_21_final$reads ####
+#Climb_21_final$pcrs$species <-
+#  Climb_21_final$samples$`Species (scientific name)`[match(Climb_21_final$pcrs$sample_id,
+#                                                                rownames(Climb_21_final$samples))]
+
+df<-as.data.frame.array(Climb_21_final$reads)
+rownames(df)
+colnames(df)
+
+library(data.table)
+setnames(df, as.character(rownames(Climb_21_final$motus)), as.character(Climb_21_final$motus$annot_hap))
+
+
+head(df)
+library(tibble)
+library(dplyr)
+Climb_21_final_pcrs<-as.data.frame(Climb_21_final$pcrs)
+Climb_21_final_pcrs<-tibble::rownames_to_column(.data = Climb_21_final_pcrs, var="SampleID")
+
+Climb_21_final_samples<-as.data.frame(Climb_21_final$samples)
+Climb_21_final_samples<-tibble::rownames_to_column(.data = Climb_21_final_samples, var="sample_id")
+
+
+df1<-tibble::rownames_to_column(.data = df, var="SampleID")
+df2<-left_join(df1,Climb_21_final_pcrs, by="SampleID")
+df3<-left_join(df2,Climb_21_final_samples, by="sample_id")
+
+df5<-column_to_rownames(.data = df3, var = "SampleID")
+
+write.csv(df5, "data/blood_vs_water_haps/2021_Climb_aggregated_haplotypes_with_sampling_data.csv")
 

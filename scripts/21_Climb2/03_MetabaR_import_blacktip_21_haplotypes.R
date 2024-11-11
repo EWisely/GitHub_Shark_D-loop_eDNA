@@ -24,7 +24,7 @@ reads_colnames<-colnames(metabar_reads_table)
 reads_rownames<-rownames(metabar_reads_table)
 
 #fix the accidental replacement of - with . 
-reads_colnames <- sapply(reads_colnames, gsub, pattern = "ASV", replacement = "Climb2_ASV", fixed = TRUE)
+#reads_colnames <- sapply(reads_colnames, gsub, pattern = "ASV", replacement = "Climb2_ASV", fixed = TRUE)
 reads_rownames <- sapply(reads_rownames, gsub, pattern = ".", replacement = "-", fixed =TRUE)
 
 #put it in a numerical matrix then put the rownames and colnames back on
@@ -40,16 +40,6 @@ rownames(Metabar_formatted_reads)<-reads_rownames
 
 
 #ASVs/motus
-<<<<<<< Updated upstream
-Dada2_ecotagged_usearched_results<-read.csv("data/21_Climb2/04_Usearch_annotated/annotated_23bthaps_2021_results.tab", sep="\t")
-Dada2_ecotagged_usearched_results<- column_to_rownames(Dada2_ecotagged_usearched_results, var = "ID")
-Dada2_ecotagged_usearched_results<-as.data.frame(Dada2_ecotagged_usearched_results)
-
-write.csv(Dada2_ecotagged_usearched_results, "data/21_Climb2/04_Usearch_annotated/annotated_23bthaps_2021_results.csv")
-
-#aggregate annotations into three new columns, then re-import.
-Dada2_ecotagged_usearched_results1<-read.csv("data/21_Climb2/04_Usearch_annotated/annotated_23bthaps_2021_results_aggregated_annots.csv")
-=======
 Dada2_ecotagged_usearched_results<-read.csv("data/21_Climb2/04_Usearch_annotated/annotated_22_bthaps_21_results_300-450.tab", sep="\t")
 Dada2_ecotagged_usearched_results<- column_to_rownames(Dada2_ecotagged_usearched_results, var = "ID")
 Dada2_ecotagged_usearched_results<-as.data.frame(Dada2_ecotagged_usearched_results)
@@ -58,7 +48,6 @@ write.csv(Dada2_ecotagged_usearched_results, "data/21_Climb2/04_Usearch_annotate
 
 #aggregate annotations into three new columns, then re-import.
 Dada2_ecotagged_usearched_results1<-read.csv("data/21_Climb2/04_Usearch_annotated/annotated_22_bthaps_2021_results_300-450_aggregated_annots.csv")
->>>>>>> Stashed changes
 Dada2_ecotagged_usearched_results1<- column_to_rownames(Dada2_ecotagged_usearched_results1, var = "X")
 Dada2_ecotagged_usearched_results1<-as.data.frame(Dada2_ecotagged_usearched_results1)
 
@@ -70,7 +59,7 @@ Metabar_Dada2_ecotagged_usearched_results$seq_len<-nchar(Metabar_Dada2_ecotagged
 #rename motus: 
 Metabar_formatted_motus<-Metabar_Dada2_ecotagged_usearched_results
 #put motus in numerical order like they are in the reads object.
-Metabar_formatted_motus$ASV_order = sapply(strsplit(rownames(Metabar_Dada2_ecotagged_usearched_results), "ASV_"), "[[", 2)
+Metabar_formatted_motus$ASV_order = sapply(strsplit(rownames(Metabar_Dada2_ecotagged_usearched_results), "Climb2_ASV_"), "[[", 2)
 #order motus same as reads
 Metabar_formatted_motus<- Metabar_formatted_motus[colnames(Metabar_formatted_reads),]
 
@@ -138,7 +127,7 @@ Climb_21$pcrs$nb_motus <- rowSums(Climb_21$reads>0)
 
 #subset the metabarlist to all PCRs with more than 0 reads
 Climb_21 <- subset_metabarlist(Climb_21, table = "pcrs",
-                                  indices = Climb_21$pcrs$nb_reads>0)
+                               indices = Climb_21$pcrs$nb_reads>0)
 
 summary_metabarlist(Climb_21)
 save(Climb_21, file = "data/21_Climb2/05_MetabaR_filtered/Climb_21_Metabarlist.RData")

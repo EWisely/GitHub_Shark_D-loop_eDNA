@@ -23,11 +23,7 @@ write.csv(df.FINAL.pcrs_Climb_21_hap_matched, "data/21_Climb2/05_MetabaR_filtere
 
 
 #Save R Global Environment
-<<<<<<< Updated upstream
-save.image(file = "data/21_Climb2/05_MetabaR_filtered/post_MetabaR_Climb_21_hap_matched_ASVs.RData")
-=======
 #save.image(file = "data/21_Climb2/05_MetabaR_filtered/post_MetabaR_Climb_21_hap_matched_ASVs.RData")  
->>>>>>> Stashed changes
 
 #Full Dataset Phyloseq starting from existing R objects made by the above code:
 
@@ -47,7 +43,7 @@ save.image(file = "data/21_Climb2/05_MetabaR_filtered/post_MetabaR_Climb_21_hap_
 #merge_phyloseq - Can take any number of phyloseq objects and/or phyloseq components, and attempts to combine them into one larger phyloseq object. This is most-useful for adding separately-imported components to an already-created phyloseq object.
 
 
-load("data/21_Climb2/05_MetabaR_filtered/post_MetabaR_Climb_21_hap_matched_ASVs.RData")
+#load("data/21_Climb2/05_MetabaR_filtered/post_MetabaR_Climb_21_hap_matched_ASVs.RData")
 #otu table
 
 #clean.otu.df<-as.data.frame(t(GAL21_Diet_Combined1$reads))
@@ -56,9 +52,6 @@ load("data/21_Climb2/05_MetabaR_filtered/post_MetabaR_Climb_21_hap_matched_ASVs.
 clean.otu.df<-as.data.frame(t(Climb_21_hap_matched_clean$reads))
 clean.otu.df<-rownames_to_column(clean.otu.df, var="id")
 
-<<<<<<< Updated upstream
-#taxa table
-=======
 #if you had to change the names of the samples in the reads file, get the edited version here:
 clean.otu.df<-as.data.frame(df.FINAL.reads_Climb_21_hap_matched)
 clean.otu.df<-column_to_rownames(clean.otu.df, var="id")
@@ -67,7 +60,6 @@ sample_names<-rownames(clean.otu.df)
 clean.otu.df<-t(clean.otu.df)
 #clean.otu.df<-rownames_to_column(as.data.frame(clean.otu.df, var="rowname"))
 
->>>>>>> Stashed changes
 
 #using haplo table:
 #clean.otu.df<-as.data.frame(t(Climb_21_final$reads))
@@ -100,11 +92,7 @@ samples.df <- samples.df %>%
 
 #make otu matrix
 
-<<<<<<< Updated upstream
-clean.otu.df<-column_to_rownames(clean.otu.df, var="id")
-=======
 #clean.otu.df<-column_to_rownames(clean.otu.df, var="id")
->>>>>>> Stashed changes
 clean.otu.mat<-as.matrix(clean.otu.df)
 
 #make taxa matrix #changed taxa.df below to haplo.df
@@ -118,9 +106,6 @@ Climb_21_haplo.ps<- phyloseq(otu_table(clean.otu.mat, taxa_are_rows = TRUE),
                              tax_table(clean.taxa.mat))
 
 Climb_21_haplo.ps #(done with usearch haplotype identified data not considering the obitools3 taxonomic identification as well.)
-
-saveRDS(Climb_21_haplo.ps,"data/21_Climb2/06_Phyloseq_viz/Climb_21_haplo.ps.RDS")
-
 
 #Save and Load R Global Environment
 #save.image(file = "data/21_Climb2/06_Phyloseq_viz/MetabaR_output_ready_for_Phyloseq")
@@ -217,4 +202,4 @@ Climb_21_species.ps<- phyloseq(otu_table(species.otu.mat, taxa_are_rows = TRUE),
                              tax_table(species.taxa.mat))
 
 Climb_21_species.ps #(done with the obi3 species assignments)
-saveRDS(Climb_21_species.ps,"data/21_Climb2/06_Phyloseq_viz/Climb_21_species.ps.RDS")
+

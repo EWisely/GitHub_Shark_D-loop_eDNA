@@ -14,6 +14,7 @@ library(DT)
 library(corncob)
 library(metagMisc)
 library(phyloseq)
+library(tidyverse)
 
 
 #Starting Phlyoseq!
@@ -29,9 +30,12 @@ Climb_22_23_species.ps
 
 Climb_22_23_species_merge.ps<-tax_glom(Climb_22_23_species.ps, "species", NArm = TRUE)
 Climb_22_23_species_merge.ps
+
+Climb_22_23_species_merge.ps<-tax_rename(Climb_22_23_species_merge.ps,rank = "species")
+
 #make Site_Date column
 
-df.samples.Climb_22_23_species_merge.ps<-sample_data(Climb_22_23_species_merge.ps)
+df.samples.Climb_22_23_species_merge.ps<-cbind(sample_data(Climb_22_23_species_merge.ps))
 
 df.samples.Climb_22_23_species_merge.ps.1<-df.samples.Climb_22_23_species_merge.ps%>%
   mutate(Site_Date= paste(Site,Date))
@@ -157,7 +161,7 @@ ggsave("data/22-23_Climb2_amplified/06_Phyloseq_viz/2022_23_Bar_Chart_of_Climb_e
 
 #make a site-date column for the haplo phyloseq object (proportions)
 
-df.samples.Climb_22_23_haplo.ps.prop<-sample_data(Climb_22_23_haplo.ps.prop)
+df.samples.Climb_22_23_haplo.ps.prop<-cbind(sample_data(Climb_22_23_haplo.ps.prop))
 
 df.samples.Climb_22_23_haplo.ps.prop1<-df.samples.Climb_22_23_haplo.ps.prop%>%
   mutate(Site_Date= paste(Site,Date))
