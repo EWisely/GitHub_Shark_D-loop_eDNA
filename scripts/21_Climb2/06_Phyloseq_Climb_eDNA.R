@@ -3,7 +3,7 @@
 #Date: 26-03-24
 
 #Load R Global Environment
-load("data/21_Climb2/06_Phyloseq_viz/MetabaR_output_ready_for_Phyloseq")
+#load("data/21_Climb2/06_Phyloseq_viz/MetabaR_output_ready_for_Phyloseq")
 
 #install.packages("ggraph") # for taxatree_plots()
 #install.packages("DT") # for tax_fix_interactive()
@@ -14,6 +14,7 @@ library(DT)
 library(corncob)
 library(metagMisc)
 library(phyloseq)
+library(tidyverse)
 
 
 #Starting Phlyoseq!
@@ -31,7 +32,7 @@ Climb_21_species_merge.ps<-tax_glom(Climb_21_species.ps, "species", NArm = TRUE)
 
 #make Site_Date column
 
-df.samples.Climb_21_species_merge.ps<-sample_data(Climb_21_species_merge.ps)
+df.samples.Climb_21_species_merge.ps<-cbind(sample_data(Climb_21_species_merge.ps))
 
 df.samples.Climb_21_species_merge.ps.1<-df.samples.Climb_21_species_merge.ps%>%
   mutate(Site_Date= paste(Site,Date))
@@ -70,7 +71,7 @@ Climb_21_species_merge.norm.ps<- phyloseq_standardize_otu_abundance(Climb_21_spe
 #plot proportions of haplotype reads by number of ASVs by Site
 plot_bar(Climb_21_species_merge.eDNAindex.ps, x="Site_Date",fill="species")+ 
   geom_bar(aes(color=species, fill=species), stat="identity", position="stack")
-ggsave("data/21_Climb2/06_Phyloseq_viz/2021_Bar_Chart_of_Climb_eDNA_Species_detections_eDNAindex_of_ASVs_by_Site_Date.jpg")
+ggsave("data/21_Climb2/06_Phyloseq_viz/2021_Bar_Chart_of_Climb_eDNA_Species_detections_eDNAindex_of_ASVs_by_Site_Date.pdf")
 
 #plot proportions of haplotype reads by number of ASVs by Site
 plot_bar(Climb_21_species_merge.ps.bin, x="Site_Date",fill="species")+ 
@@ -157,7 +158,7 @@ ggsave("data/21_Climb2/06_Phyloseq_viz/2021_Bar_Chart_of_Climb_eDNA_Haplotype_AS
 
 #make a site-date column for the haplo phyloseq object (proportions)
 
-df.samples.Climb_21_haplo.ps.prop<-sample_data(Climb_21_haplo.ps.prop)
+df.samples.Climb_21_haplo.ps.prop<-cbind(sample_data(Climb_21_haplo.ps.prop))
 
 df.samples.Climb_21_haplo.ps.prop1<-df.samples.Climb_21_haplo.ps.prop%>%
   mutate(Site_Date= paste(Site,Date))
